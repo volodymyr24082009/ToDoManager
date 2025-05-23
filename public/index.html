@@ -1,131 +1,625 @@
 <!DOCTYPE html>
 <html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Менеджер Завдань</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-</head>
-<body class="light-theme">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Менеджер Завдань Pro</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/chart.js@4.0.0/dist/chart.min.css"
+    />
+  </head>
+  <body class="light-theme">
     <header>
-        <h1>Менеджер Завдань</h1>
-        <div class="header-controls">
-            <button id="pomodoro-btn" class="btn">
-                <span class="material-symbols-outlined">timer</span>
-                Помодоро
-            </button>
-            <button id="theme-toggle" class="btn">
-                <span class="material-symbols-outlined">dark_mode</span>
-            </button>
+      <div class="logo-container">
+        <span class="material-symbols-outlined logo-icon">task_alt</span>
+        <h1>Менеджер Завдань Pro</h1>
+      </div>
+      <div class="search-container">
+        <div class="search-box">
+          <span class="material-symbols-outlined">search</span>
+          <input type="text" id="search-input" placeholder="Пошук завдань..." />
         </div>
+      </div>
+      <div class="header-controls">
+        <button id="stats-btn" class="btn btn-icon" title="Статистика">
+          <span class="material-symbols-outlined">bar_chart</span>
+        </button>
+        <button id="pomodoro-btn" class="btn btn-icon" title="Помодоро">
+          <span class="material-symbols-outlined">timer</span>
+        </button>
+        <button id="settings-btn" class="btn btn-icon" title="Налаштування">
+          <span class="material-symbols-outlined">settings</span>
+        </button>
+        <button id="theme-toggle" class="btn btn-icon" title="Змінити тему">
+          <span class="material-symbols-outlined">dark_mode</span>
+        </button>
+      </div>
     </header>
 
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h3>Фільтри</h3>
+      </div>
+      <div class="sidebar-content">
+        <div class="filter-group">
+          <h4>Статус</h4>
+          <div class="filter-options">
+            <label class="filter-option">
+              <input type="checkbox" data-filter="status" value="all" checked />
+              <span>Всі</span>
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" data-filter="status" value="todo" />
+              <span>Потрібно зробити</span>
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" data-filter="status" value="inprogress" />
+              <span>В процесі</span>
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" data-filter="status" value="done" />
+              <span>Виконано</span>
+            </label>
+          </div>
+        </div>
+        <div class="filter-group">
+          <h4>Пріоритет</h4>
+          <div class="filter-options">
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                data-filter="priority"
+                value="all"
+                checked
+              />
+              <span>Всі</span>
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" data-filter="priority" value="low" />
+              <span>Низький</span>
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" data-filter="priority" value="medium" />
+              <span>Середній</span>
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" data-filter="priority" value="high" />
+              <span>Високий</span>
+            </label>
+          </div>
+        </div>
+        <div class="filter-group">
+          <h4>Категорії</h4>
+          <div class="filter-options" id="category-filters">
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                data-filter="category"
+                value="all"
+                checked
+              />
+              <span>Всі</span>
+            </label>
+            <!-- Категорії будуть додані динамічно -->
+          </div>
+        </div>
+        <div class="filter-group">
+          <h4>Термін</h4>
+          <div class="filter-options">
+            <label class="filter-option">
+              <input type="checkbox" data-filter="due" value="all" checked />
+              <span>Всі</span>
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" data-filter="due" value="today" />
+              <span>Сьогодні</span>
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" data-filter="due" value="week" />
+              <span>Цього тижня</span>
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" data-filter="due" value="overdue" />
+              <span>Прострочені</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-footer">
+        <button id="export-btn" class="btn btn-sm">
+          <span class="material-symbols-outlined">download</span>
+          Експорт
+        </button>
+        <button id="import-btn" class="btn btn-sm">
+          <span class="material-symbols-outlined">upload</span>
+          Імпорт
+        </button>
+        <input
+          type="file"
+          id="import-file"
+          accept=".json"
+          style="display: none"
+        />
+      </div>
+    </div>
+
     <main>
-        <div class="task-form-container">
-            <form id="task-form">
-                <div class="form-group">
-                    <label for="task-title">Назва завдання:</label>
-                    <input type="text" id="task-title" required>
-                </div>
-                <div class="form-group">
-                    <label for="task-description">Опис:</label>
-                    <textarea id="task-description"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="task-due-date">Дата виконання:</label>
-                    <input type="date" id="task-due-date">
-                </div>
-                <div class="form-group">
-                    <label for="task-priority">Пріоритет:</label>
-                    <select id="task-priority">
-                        <option value="low">Низький</option>
-                        <option value="medium" selected>Середній</option>
-                        <option value="high">Високий</option>
-                    </select>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Додати завдання</button>
-                    <button type="button" id="cancel-edit" class="btn" style="display: none;">Скасувати</button>
-                </div>
-                <input type="hidden" id="task-id">
-            </form>
+      <div class="dashboard">
+        <div class="dashboard-header">
+          <h2>Огляд завдань</h2>
+          <div class="view-controls">
+            <button id="board-view-btn" class="view-btn active" title="Дошка">
+              <span class="material-symbols-outlined">view_kanban</span>
+            </button>
+            <button id="list-view-btn" class="view-btn" title="Список">
+              <span class="material-symbols-outlined">view_list</span>
+            </button>
+          </div>
         </div>
 
-        <div class="task-board">
-            <div class="task-column" id="todo-column">
-                <h2>Потрібно зробити</h2>
-                <div class="task-list" data-status="todo" ondragover="allowDrop(event)" ondrop="drop(event)"></div>
+        <div class="dashboard-stats">
+          <div class="stat-card">
+            <div
+              class="stat-icon"
+              style="background-color: var(--primary-color)"
+            >
+              <span class="material-symbols-outlined">task</span>
             </div>
-            <div class="task-column" id="inprogress-column">
-                <h2>В процесі</h2>
-                <div class="task-list" data-status="inprogress" ondragover="allowDrop(event)" ondrop="drop(event)"></div>
+            <div class="stat-info">
+              <h3>Всього завдань</h3>
+              <p id="total-tasks">0</p>
             </div>
-            <div class="task-column" id="done-column">
-                <h2>Виконано</h2>
-                <div class="task-list" data-status="done" ondragover="allowDrop(event)" ondrop="drop(event)"></div>
+          </div>
+          <div class="stat-card">
+            <div
+              class="stat-icon"
+              style="background-color: var(--warning-color)"
+            >
+              <span class="material-symbols-outlined">pending</span>
             </div>
+            <div class="stat-info">
+              <h3>В процесі</h3>
+              <p id="inprogress-tasks">0</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div
+              class="stat-icon"
+              style="background-color: var(--success-color)"
+            >
+              <span class="material-symbols-outlined">done_all</span>
+            </div>
+            <div class="stat-info">
+              <h3>Виконано</h3>
+              <p id="completed-tasks">0</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div
+              class="stat-icon"
+              style="background-color: var(--danger-color)"
+            >
+              <span class="material-symbols-outlined">schedule</span>
+            </div>
+            <div class="stat-info">
+              <h3>Прострочено</h3>
+              <p id="overdue-tasks">0</p>
+            </div>
+          </div>
         </div>
+
+        <div class="task-form-container">
+          <div class="form-header">
+            <h3>Нове завдання</h3>
+            <button id="toggle-form-btn" class="btn-icon">
+              <span class="material-symbols-outlined">expand_less</span>
+            </button>
+          </div>
+          <div class="form-content">
+            <form id="task-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="task-title">Назва завдання:</label>
+                  <input type="text" id="task-title" required />
+                </div>
+                <div class="form-group">
+                  <label for="task-category">Категорія:</label>
+                  <div class="custom-select">
+                    <select id="task-category">
+                      <option value="робота">Робота</option>
+                      <option value="особисте">Особисте</option>
+                      <option value="навчання">Навчання</option>
+                      <option value="інше">Інше</option>
+                    </select>
+                    <span class="material-symbols-outlined">expand_more</span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="task-description">Опис:</label>
+                <textarea id="task-description"></textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="task-due-date">Дата виконання:</label>
+                  <input type="date" id="task-due-date" />
+                </div>
+                <div class="form-group">
+                  <label for="task-priority">Пріоритет:</label>
+                  <div class="custom-select">
+                    <select id="task-priority">
+                      <option value="low">Низький</option>
+                      <option value="medium" selected>Середній</option>
+                      <option value="high">Високий</option>
+                    </select>
+                    <span class="material-symbols-outlined">expand_more</span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="task-progress">Прогрес виконання:</label>
+                <div class="progress-container">
+                  <input
+                    type="range"
+                    id="task-progress"
+                    min="0"
+                    max="100"
+                    step="10"
+                    value="0"
+                  />
+                  <span id="progress-value">0%</span>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  <span class="material-symbols-outlined">add_task</span>
+                  Додати завдання
+                </button>
+                <button
+                  type="button"
+                  id="cancel-edit"
+                  class="btn"
+                  style="display: none"
+                >
+                  <span class="material-symbols-outlined">close</span>
+                  Скасувати
+                </button>
+              </div>
+              <input type="hidden" id="task-id" />
+            </form>
+          </div>
+        </div>
+
+        <div id="board-view" class="task-board">
+          <div class="task-column" id="todo-column">
+            <div class="column-header">
+              <h2>Потрібно зробити</h2>
+              <span class="task-count" id="todo-count">0</span>
+            </div>
+            <div
+              class="task-list"
+              data-status="todo"
+              ondragover="allowDrop(event)"
+              ondrop="drop(event)"
+            ></div>
+          </div>
+          <div class="task-column" id="inprogress-column">
+            <div class="column-header">
+              <h2>В процесі</h2>
+              <span class="task-count" id="inprogress-count">0</span>
+            </div>
+            <div
+              class="task-list"
+              data-status="inprogress"
+              ondragover="allowDrop(event)"
+              ondrop="drop(event)"
+            ></div>
+          </div>
+          <div class="task-column" id="done-column">
+            <div class="column-header">
+              <h2>Виконано</h2>
+              <span class="task-count" id="done-count">0</span>
+            </div>
+            <div
+              class="task-list"
+              data-status="done"
+              ondragover="allowDrop(event)"
+              ondrop="drop(event)"
+            ></div>
+          </div>
+        </div>
+
+        <div id="list-view" class="task-list-view" style="display: none">
+          <div class="list-header">
+            <div class="list-cell">Назва</div>
+            <div class="list-cell">Категорія</div>
+            <div class="list-cell">Пріоритет</div>
+            <div class="list-cell">Термін</div>
+            <div class="list-cell">Прогрес</div>
+            <div class="list-cell">Статус</div>
+            <div class="list-cell">Дії</div>
+          </div>
+          <div id="list-content"></div>
+        </div>
+      </div>
     </main>
 
     <!-- Модальне вікно Pomodoro -->
     <div id="pomodoro-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Помодоро Таймер</h2>
-            <div class="pomodoro-container">
-                <div class="timer-display">
-                    <span id="minutes">25</span>:<span id="seconds">00</span>
-                </div>
-                <div class="timer-controls">
-                    <button id="start-timer" class="btn btn-primary">Почати</button>
-                    <button id="pause-timer" class="btn" disabled>Пауза</button>
-                    <button id="reset-timer" class="btn">Скинути</button>
-                </div>
-                <div class="timer-mode">
-                    <button id="pomodoro-mode" class="btn btn-mode active">Робота (25 хв)</button>
-                    <button id="short-break-mode" class="btn btn-mode">Коротка перерва (5 хв)</button>
-                    <button id="long-break-mode" class="btn btn-mode">Довга перерва (15 хв)</button>
-                </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Помодоро Таймер</h2>
+          <span class="close">&times;</span>
+        </div>
+        <div class="pomodoro-container">
+          <div class="timer-circle">
+            <svg width="250" height="250" viewBox="0 0 250 250">
+              <circle
+                cx="125"
+                cy="125"
+                r="120"
+                fill="none"
+                stroke="#e0e0e0"
+                stroke-width="10"
+              />
+              <circle
+                cx="125"
+                cy="125"
+                r="120"
+                fill="none"
+                stroke="var(--primary-color)"
+                stroke-width="10"
+                stroke-dasharray="753.6"
+                stroke-dashoffset="0"
+                id="timer-progress"
+              />
+            </svg>
+            <div class="timer-display">
+              <span id="minutes">25</span>:<span id="seconds">00</span>
             </div>
+          </div>
+          <div class="timer-controls">
+            <button id="start-timer" class="btn btn-primary">
+              <span class="material-symbols-outlined">play_arrow</span>
+              Почати
+            </button>
+            <button id="pause-timer" class="btn" disabled>
+              <span class="material-symbols-outlined">pause</span>
+              Пауза
+            </button>
+            <button id="reset-timer" class="btn">
+              <span class="material-symbols-outlined">restart_alt</span>
+              Скинути
+            </button>
+          </div>
+          <div class="timer-mode">
+            <button id="pomodoro-mode" class="btn btn-mode active">
+              Робота (25 хв)
+            </button>
+            <button id="short-break-mode" class="btn btn-mode">
+              Коротка перерва (5 хв)
+            </button>
+            <button id="long-break-mode" class="btn btn-mode">
+              Довга перерва (15 хв)
+            </button>
+          </div>
+          <div class="pomodoro-stats">
+            <div class="pomodoro-stat">
+              <span class="material-symbols-outlined">cycle</span>
+              <div>
+                <h4>Цикли</h4>
+                <p id="pomodoro-cycles">0</p>
+              </div>
+            </div>
+            <div class="pomodoro-stat">
+              <span class="material-symbols-outlined">schedule</span>
+              <div>
+                <h4>Загальний час</h4>
+                <p id="pomodoro-total-time">0 хв</p>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
 
-    <!-- Модальне вікно редагування завдання -->
-    <div id="edit-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Редагувати завдання</h2>
-            <form id="edit-form">
-                <div class="form-group">
-                    <label for="edit-title">Назва завдання:</label>
-                    <input type="text" id="edit-title" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-description">Опис:</label>
-                    <textarea id="edit-description"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="edit-due-date">Дата виконання:</label>
-                    <input type="date" id="edit-due-date">
-                </div>
-                <div class="form-group">
-                    <label for="edit-priority">Пріоритет:</label>
-                    <select id="edit-priority">
-                        <option value="low">Низький</option>
-                        <option value="medium">Середній</option>
-                        <option value="high">Високий</option>
-                    </select>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Зберегти</button>
-                </div>
-                <input type="hidden" id="edit-id">
-                <input type="hidden" id="edit-status">
-            </form>
+    <!-- Модальне вікно статистики -->
+    <div id="stats-modal" class="modal">
+      <div class="modal-content modal-lg">
+        <div class="modal-header">
+          <h2>Статистика завдань</h2>
+          <span class="close">&times;</span>
         </div>
+        <div class="stats-container">
+          <div class="stats-row">
+            <div class="stats-card">
+              <h3>Розподіл за статусом</h3>
+              <canvas id="status-chart"></canvas>
+            </div>
+            <div class="stats-card">
+              <h3>Розподіл за пріоритетом</h3>
+              <canvas id="priority-chart"></canvas>
+            </div>
+          </div>
+          <div class="stats-row">
+            <div class="stats-card">
+              <h3>Розподіл за категоріями</h3>
+              <canvas id="category-chart"></canvas>
+            </div>
+            <div class="stats-card">
+              <h3>Продуктивність за тиждень</h3>
+              <canvas id="weekly-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
+    <!-- Модальне вікно налаштувань -->
+    <div id="settings-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Налаштування</h2>
+          <span class="close">&times;</span>
+        </div>
+        <div class="settings-container">
+          <div class="settings-group">
+            <h3>Загальні</h3>
+            <div class="settings-option">
+              <label for="auto-save">Автоматичне збереження</label>
+              <label class="switch">
+                <input type="checkbox" id="auto-save" checked />
+                <span class="slider round"></span>
+              </label>
+            </div>
+            <div class="settings-option">
+              <label for="show-notifications">Сповіщення</label>
+              <label class="switch">
+                <input type="checkbox" id="show-notifications" checked />
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+          <div class="settings-group">
+            <h3>Помодоро</h3>
+            <div class="settings-option">
+              <label for="pomodoro-duration"
+                >Тривалість робочого часу (хв)</label
+              >
+              <input
+                type="number"
+                id="pomodoro-duration"
+                min="1"
+                max="60"
+                value="25"
+              />
+            </div>
+            <div class="settings-option">
+              <label for="short-break-duration"
+                >Тривалість короткої перерви (хв)</label
+              >
+              <input
+                type="number"
+                id="short-break-duration"
+                min="1"
+                max="30"
+                value="5"
+              />
+            </div>
+            <div class="settings-option">
+              <label for="long-break-duration"
+                >Тривалість довгої перерви (хв)</label
+              >
+              <input
+                type="number"
+                id="long-break-duration"
+                min="1"
+                max="60"
+                value="15"
+              />
+            </div>
+          </div>
+          <div class="settings-group">
+            <h3>Категорії</h3>
+            <div class="category-manager">
+              <div class="category-list" id="category-list">
+                <!-- Категорії будуть додані динамічно -->
+              </div>
+              <div class="category-add">
+                <input
+                  type="text"
+                  id="new-category"
+                  placeholder="Нова категорія"
+                />
+                <button id="add-category" class="btn btn-sm">Додати</button>
+              </div>
+            </div>
+          </div>
+          <div class="settings-actions">
+            <button id="save-settings" class="btn btn-primary">Зберегти</button>
+            <button id="reset-settings" class="btn">Скинути</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модальне вікно деталей завдання -->
+    <div id="task-details-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Деталі завдання</h2>
+          <span class="close">&times;</span>
+        </div>
+        <div class="task-details-container">
+          <div class="task-details-header">
+            <h3 id="detail-title"></h3>
+            <div class="task-badges">
+              <span class="badge" id="detail-priority"></span>
+              <span class="badge" id="detail-category"></span>
+              <span class="badge" id="detail-status"></span>
+            </div>
+          </div>
+          <div class="task-details-content">
+            <div class="detail-group">
+              <h4>Опис</h4>
+              <p id="detail-description"></p>
+            </div>
+            <div class="detail-row">
+              <div class="detail-group">
+                <h4>Дата створення</h4>
+                <p id="detail-created"></p>
+              </div>
+              <div class="detail-group">
+                <h4>Термін виконання</h4>
+                <p id="detail-due-date"></p>
+              </div>
+            </div>
+            <div class="detail-group">
+              <h4>Прогрес виконання</h4>
+              <div class="progress-bar">
+                <div class="progress-fill" id="detail-progress"></div>
+                <span id="detail-progress-text"></span>
+              </div>
+            </div>
+          </div>
+          <div class="task-details-actions">
+            <button id="edit-task-btn" class="btn">
+              <span class="material-symbols-outlined">edit</span>
+              Редагувати
+            </button>
+            <button id="delete-task-btn" class="btn btn-danger">
+              <span class="material-symbols-outlined">delete</span>
+              Видалити
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модальне вікно підтвердження -->
+    <div id="confirm-modal" class="modal">
+      <div class="modal-content modal-sm">
+        <div class="modal-header">
+          <h2>Підтвердження</h2>
+          <span class="close">&times;</span>
+        </div>
+        <div class="confirm-container">
+          <p id="confirm-message"></p>
+          <div class="confirm-actions">
+            <button id="confirm-yes" class="btn btn-danger">Так</button>
+            <button id="confirm-no" class="btn">Ні</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.0/dist/chart.umd.min.js"></script>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
